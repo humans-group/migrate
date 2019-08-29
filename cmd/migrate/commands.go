@@ -1,4 +1,4 @@
-package cli
+package main
 
 import (
 	"errors"
@@ -62,7 +62,7 @@ func cleanDir(dir string) string {
 	}
 }
 
-// createCmd (meant to be called via a CLI command) creates a new migration
+// createCmd (meant to be called via a command) creates a new migration
 func createCmd(dir string, startTime time.Time, format string, name string, ext string, seq bool, seqDigits int) {
 	dir = cleanDir(dir)
 	var base string
@@ -106,6 +106,26 @@ func createCmd(dir string, startTime time.Time, format string, name string, ext 
 func createFile(fname string) {
 	if _, err := os.Create(fname); err != nil {
 		log.fatalErr(err)
+	}
+}
+
+func createDBCmd(m *migrate.Migrate, dbName string) {
+	if err := m.CreateDB(dbName); err != nil {
+		if err != migrate.ErrNoChange {
+			log.fatalErr(err)
+		} else {
+			log.Println(err)
+		}
+	}
+}
+
+func dropDBCmd(m *migrate.Migrate, dbName string) {
+	if err := m.DropDB(dbName); err != nil {
+		if err != migrate.ErrNoChange {
+			log.fatalErr(err)
+		} else {
+			log.Println(err)
+		}
 	}
 }
 
