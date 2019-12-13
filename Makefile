@@ -1,5 +1,5 @@
-SOURCE ?= file go_bindata github github_ee aws_s3 google_cloud_storage godoc_vfs gitlab
-DATABASE ?= postgres mysql redshift cassandra spanner cockroachdb clickhouse mongodb sqlserver
+SOURCE ?= file gitlab
+DATABASE ?= postgres
 VERSION ?= $(shell git describe --tags 2>/dev/null | cut -c 2-)
 TEST_FLAGS ?=
 REPO_OWNER ?= $(shell cd .. && basename "$$(pwd)")
@@ -8,7 +8,7 @@ COVERAGE_DIR ?= .coverage
 
 build-cli: clean
 	-mkdir -p ./cli/build
-	cd ./cmd/migrate && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o ../../cli/build/migrate.linux-amd64 -ldflags='-s -w -X main.Version=$(VERSION) -extldflags "-static"' -tags '$(DATABASE) $(SOURCE)' .
+	cd ./cmd/migrate && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o ../../cli/build/migrate.linux-amd64 -ldflags='-s -w -X main.Version=$(VERSION) -extldflags "-static"' -tags 'create_drop_db $(DATABASE) $(SOURCE)' .
 	cd ./cmd/migrate && CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -a -o ../../cli/build/migrate.darwin-amd64 -ldflags='-s -w -X main.Version=$(VERSION) -extldflags "-static"' -tags 'create_drop_db $(DATABASE) $(SOURCE)' .
 
 clean:
