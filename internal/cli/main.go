@@ -70,7 +70,7 @@ func Main() {
 	sourcePtr := flag.String("source", "file://", "")
 
 	flag.Usage = func() {
-		fmt.Fprint(os.Stderr,
+		fmt.Fprintf(os.Stderr,
 			`Usage: migrate OPTIONS COMMAND [arg...]
        migrate [ -version | -help ]
 
