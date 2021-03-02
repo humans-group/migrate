@@ -70,7 +70,7 @@ func Main() {
 	sourcePtr := flag.String("source", "file://", "")
 
 	flag.Usage = func() {
-		_, err := fmt.Fprint(os.Stderr,
+		fmt.Fprint(os.Stderr,
 			`Usage: migrate OPTIONS COMMAND [arg...]
        migrate [ -version | -help ]
 
@@ -84,26 +84,19 @@ Options:
   -version         Print version
   -help            Print usage
 
-Commands:
-  create [-ext E] [-dir D] [-seq] [-digits N] [-format] NAME
-							Create a set of timestamped up/down migrations titled NAME, in directory D with extension E.
-							Use -seq option to generate sequential up/down migrations with N digits.
-							Use -format option to specify a Go time format string.
-  goto V                    Migrate to version V
-  up [N]                    Apply all or N up migrations
-  down [N]                  Apply all or N down migrations
-  drop                      Drop everything inside database
-  force V                   Set version V but don't run migration (ignores dirty state)
-  version                   Print current migration version
-  create_db database_name   Creates database
-  drop_db database_name     Drops database
-  version                   Print current migration version
+	Commands:
+		%s
+		%s
+		%s
+		%s
+		%s
+		%s
+		version      Print current migration version
+		create_db database_name   Creates database
+		drop_db database_name     Drops database
 
-Source drivers: `+strings.Join(source.List(), ", ")+`
-Database drivers: `+strings.Join(database.List(), ", ")+"\n")
-		if err != nil {
-			panic("FPrint err: " + err.Error())
-		}
+		Source drivers: `+strings.Join(source.List(), ", ")+`
+		Database drivers: `+strings.Join(database.List(), ", ")+"\n", createUsage, gotoUsage, upUsage, downUsage, dropUsage, forceUsage)
 	}
 
 	flag.Parse()
