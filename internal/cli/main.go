@@ -59,7 +59,7 @@ func printUsageAndExit() {
 }
 
 // Main function of a cli application. It is public for backwards compatibility with `cli` package
-func Main(version string) {
+func Main() {
 	helpPtr := flag.Bool("help", false, "")
 	versionPtr := flag.Bool("version", false, "")
 	verbosePtr := flag.Bool("verbose", false, "")
@@ -67,7 +67,7 @@ func Main(version string) {
 	lockTimeoutPtr := flag.Uint("lock-timeout", 15, "")
 	pathPtr := flag.String("path", "", "")
 	databasePtr := flag.String("database", "", "")
-	sourcePtr := flag.String("source", "", "")
+	sourcePtr := flag.String("source", "file://", "")
 
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr,
@@ -84,17 +84,19 @@ Options:
   -version         Print version
   -help            Print usage
 
-Commands:
-  %s
-  %s
-  %s
-  %s
-  %s
-  %s
-  version      Print current migration version
+	Commands:
+		%s
+		%s
+		%s
+		%s
+		%s
+		%s
+		version      Print current migration version
+		create_db database_name   Creates database
+		drop_db database_name     Drops database
 
-Source drivers: `+strings.Join(source.List(), ", ")+`
-Database drivers: `+strings.Join(database.List(), ", ")+"\n", createUsage, gotoUsage, upUsage, downUsage, dropUsage, forceUsage)
+		Source drivers: `+strings.Join(source.List(), ", ")+`
+		Database drivers: `+strings.Join(database.List(), ", ")+"\n", createUsage, gotoUsage, upUsage, downUsage, dropUsage, forceUsage)
 	}
 
 	flag.Parse()
@@ -104,7 +106,7 @@ Database drivers: `+strings.Join(database.List(), ", ")+"\n", createUsage, gotoU
 
 	// show cli version
 	if *versionPtr {
-		fmt.Fprintln(os.Stderr, version)
+		fmt.Fprintln(os.Stderr, Version)
 		os.Exit(0)
 	}
 
@@ -371,7 +373,30 @@ Database drivers: `+strings.Join(database.List(), ", ")+"\n", createUsage, gotoU
 			log.fatalErr(err)
 		}
 
+	case "create_db":
+		createDB(migraterErr, migrater, startTime)
+
+	case "drop_db":
+		dropDB(migraterErr, migrater, startTime)
+
 	default:
 		printUsageAndExit()
 	}
+}
+
+var dropDB = func(migraterErr error, migrater *migrate.Migrate, startTime time.Time) {
+	flag.Usage()
+
+	// If a command is not found we exit with a status 2 to match the behavior
+	// of flag.Parse() with flag.ExitOnError when parsing an invalid flag.
+	os.Exit(2)
+
+}
+
+var createDB = func(migraterErr error, migrater *migrate.Migrate, startTime time.Time) {
+	flag.Usage()
+
+	// If a command is not found we exit with a status 2 to match the behavior
+	// of flag.Parse() with flag.ExitOnError when parsing an invalid flag.
+	os.Exit(2)
 }
